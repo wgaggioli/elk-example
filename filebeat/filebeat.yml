@@ -1,0 +1,10 @@
+filebeat.prospectors:
+  - input_type: log
+    paths:
+      - /var/log/nginx/access.log
+      - /var/log/nginx/error.log
+  - input_type: log
+    paths:
+      - /var/log/webapp/app.log
+output.logstash:
+  hosts: ["logstash:5044"]
