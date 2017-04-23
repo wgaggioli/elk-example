@@ -9,5 +9,4 @@ RUN set -ex && \
   mv filebeat-5.3.0-linux-x86 /filebeat
 
 WORKDIR /filebeat
-COPY filebeat.yml /filebeat/filebeat.yml
 CMD ["./filebeat", "-e", "-c", "/filebeat/filebeat.yml"]

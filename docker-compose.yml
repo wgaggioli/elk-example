@@ -36,6 +36,8 @@ services:
       - elasticsearch
     expose:
       - "5044"
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
   kibana:
     image: docker.elastic.co/kibana/kibana:5.3.0
     container_name: kibana
@@ -52,6 +54,7 @@ services:
     volumes:
       - ./volumes/nginx_logs:/var/log/nginx
       - ./volumes/webapp_logs:/var/log/webapp
+      - ./filebeat/filebeat.yml:/filebeat/filebeat.yml
     links:
       - logstash
 
