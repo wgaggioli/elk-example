@@ -2,8 +2,11 @@ filebeat.prospectors:
   - input_type: log
     paths:
       - /var/log/nginx/access.log
+    tags: ["nginx_access"]
+  - input_type: log
+    paths:
       - /var/log/nginx/error.log
-      - /var/log/nginx/sample.log
+    tags: ["nginx_error"]
   - input_type: log
     paths:
       - /var/log/webapp/app.log
@@ -11,5 +14,6 @@ filebeat.prospectors:
       pattern: '^\d{4}-\d{2}-\d{2}'
       negate: true
       match: after
+    tags: ["webapp"]
 output.logstash:
   hosts: ["logstash:5044"]
