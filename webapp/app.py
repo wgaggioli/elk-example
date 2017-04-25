@@ -5,6 +5,7 @@ from flask import (
     Flask,
     request,
     request_started,
+    got_request_exception,
 )
 
 from settings import LOGGING_CONFIG, STRUCTLOG_PROCESSORS
@@ -40,7 +41,12 @@ def _init_logger(sender, **extra):
         query_args=request.args,
     )
 
+
+def _log_exception(sender, exception, exc_info=None, **extra):
+    app.struct_log.error(exc_info=exception)
+
 request_started.connect(_init_logger, app)
+got_request_exception.connect(_log_exception, app)
 
 
 if __name__ == "__main__":

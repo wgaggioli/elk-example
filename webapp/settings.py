@@ -22,12 +22,11 @@ LOGGING_CONFIG = {
     },
     'loggers': {
         'root': {
-            'level': 'INFO',
+            'level': 'WARN',
             'handlers': ['file']
         },
         'elk_example': {
-            'level': 'INFO',
-            'handlers': ['file']
+            'level': 'INFO'
         },
         'elk_example_json': {
             'level': 'INFO',
