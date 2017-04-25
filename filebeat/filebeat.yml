@@ -15,5 +15,9 @@ filebeat.prospectors:
       negate: true
       match: after
     tags: ["webapp"]
+  - input_type: log
+    paths:
+      - /var/log/webapp/app_structured.log
+    tags: ["webapp_json", "json"]
 output.logstash:
   hosts: ["logstash:5044"]
