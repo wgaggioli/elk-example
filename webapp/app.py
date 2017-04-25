@@ -1,7 +1,11 @@
 import logging.config
 
 import structlog
-from flask import Flask, request
+from flask import (
+    Flask,
+    request,
+    request_started,
+)
 
 from settings import LOGGING_CONFIG, STRUCTLOG_PROCESSORS
 
@@ -11,7 +15,23 @@ logger = structlog.get_logger('elk_example_json')
 
 @app.route('/')
 def index():
-    log = logger.new(
+    app.struct_log.info('hello world')
+    return 'boogars'
+
+
+@app.route('/another')
+def another():
+    app.struct_log.info('another')
+    return 'candy canes'
+
+
+@app.route('/error')
+def error():
+    1/0
+
+
+def _init_logger(sender, **extra):
+    app.struct_log.bind(
         verb=request.method,
         path=request.path,
         headers=dict(request.headers),
@@ -19,13 +39,8 @@ def index():
         form=request.form,
         query_args=request.args,
     )
-    logger.info('hello world')
-    return 'boogars'
 
-
-@app.route('/error')
-def error():
-    1/0
+request_started.connect(_init_logger, app)
 
 
 if __name__ == "__main__":
@@ -36,4 +51,5 @@ if __name__ == "__main__":
         context_class=structlog.threadlocal.wrap_dict(dict),
         logger_factory=structlog.stdlib.LoggerFactory(),
     )
+    app.struct_log = logger.new()
     app.run(host="0.0.0.0", use_reloader=True)
