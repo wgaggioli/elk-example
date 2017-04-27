@@ -1,10 +1,12 @@
 import logging.config
+import random
+import time
 
 import structlog
 from flask import (
     Flask,
     request,
-    request_started,
+    g,
     got_request_exception,
 )
 
@@ -22,7 +24,8 @@ def index():
 
 @app.route('/another')
 def another():
-    app.struct_log.info('another')
+    sleepy_time = random.gauss(1., 0.3)
+    time.sleep(max([0., sleepy_time]))
     return 'candy canes'
 
 
@@ -30,8 +33,8 @@ def another():
 def error():
     1/0
 
-
-def _init_logger(sender, **extra):
+@app.before_request
+def _on_request_start():
     app.struct_log.bind(
         verb=request.method,
         path=request.path,
@@ -40,13 +43,22 @@ def _init_logger(sender, **extra):
         form=request.form,
         query_args=request.args,
     )
+    g.time_started = time.time()
 
 
-def _log_exception(sender, exception, exc_info=None, **extra):
-    app.struct_log.error(exc_info=exception)
+@app.teardown_request
+def _on_request_finished(exception=None):
+    app.struct_log.info(
+        'request-complete',
+        duration=time.time() - g.time_started,
+    )
 
-request_started.connect(_init_logger, app)
-got_request_exception.connect(_log_exception, app)
+#
+# def _log_exception(sender, exception, exc_info=None, **extra):
+#     app.struct_log.error(exc_info=exception)
+#
+#
+# got_request_exception.connect(_log_exception, app)
 
 
 if __name__ == "__main__":
